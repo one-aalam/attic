@@ -1,28 +1,13 @@
 [
   {
-    "name": "king arthur",
-    "password": "password1",
-    "profession": "king",
-    "id": 1
-  },
-  {
-    "name": "rob kendal",
-    "password": "password3",
-    "profession": "code fiddler",
-    "id": 2
-  },
-  {
-    "id": 3,
-    "name": "teresa may",
+    "name": "Admin",
     "password": "admin",
-    "profession": "brexit destroyer",
     "login": "admin",
     "firstName": "Administrator",
     "lastName": "Administrator",
     "email": "admin@localhost",
     "imageUrl": "",
     "activated": true,
-    "langKey": "en",
     "createdBy": "system",
     "createdDate": null,
     "lastModifiedBy": "system",
@@ -30,21 +15,25 @@
     "authorities": [
       "ROLE_USER",
       "ROLE_ADMIN"
+    ],
+    "id": "95e5e2ef712658ac"
+  },
+  {
+    "id": "28d4c5bf9a986d80",
+    "name": "aalam",
+    "password": "password",
+    "login": "aftab",
+    "firstName": "Aftab",
+    "lastName": "Alam",
+    "email": "aalam@localhost",
+    "imageUrl": "",
+    "activated": true,
+    "createdBy": "system",
+    "createdDate": null,
+    "lastModifiedBy": "system",
+    "lastModifiedDate": null,
+    "authorities": [
+      "ROLE_USER"
     ]
-  },
-  {
-    "name": "Amit",
-    "password": "Kumar",
-    "id": 4
-  },
-  {
-    "name": "MrAmit",
-    "password": "Kumar",
-    "id": 5
-  },
-  {
-    "name": "Amit",
-    "password": "Papnai",
-    "id": 6
   }
 ]
