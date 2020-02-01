@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const jwtKey = 'my_secret_key';
 const jwtExpirySeconds = 300;
 const dataPath = './fixtures/users.json';
-const file = require('../utils/file');
+const file = require('../lib/file');
 
 const apiRoutes = (app) => {
     // READ

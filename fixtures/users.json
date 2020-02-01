@@ -41,5 +41,10 @@
     "name": "MrAmit",
     "password": "Kumar",
     "id": 5
+  },
+  {
+    "name": "Amit",
+    "password": "Papnai",
+    "id": 6
   }
 ]

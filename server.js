@@ -8,8 +8,8 @@ const app = express();
 
 // configure our express instance with some body-parser settings
 // including handling JSON data
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // this is where we'll handle our various routes from
