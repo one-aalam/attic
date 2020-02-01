@@ -7,8 +7,8 @@ const bodyParser = require('body-parser').json({
 const findUsers = require('../lib/find-users');
 const requireAuth = require('../lib/require-auth');
 
-const jwtSecretKey = '1m_s3cure';
-const jwtExpiresIn = 24 * 60 * 60 * 1000 ;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
+const jwtExpiresIn = parseInt(process.env.JWT_EXPIRES_IN) ;
 
 
 const createToken = user => jwt.sign({ id: user.id, name: user.name }, jwtSecretKey, {

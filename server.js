@@ -1,3 +1,4 @@
+require('dotenv').config();
 // load up the express framework and body-parser helper
 const express = require('express');
 const path = require('path');
