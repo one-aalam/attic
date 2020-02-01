@@ -1,0 +1,45 @@
+[
+  {
+    "name": "king arthur",
+    "password": "password1",
+    "profession": "king",
+    "id": 1
+  },
+  {
+    "name": "rob kendal",
+    "password": "password3",
+    "profession": "code fiddler",
+    "id": 2
+  },
+  {
+    "id": 3,
+    "name": "teresa may",
+    "password": "admin",
+    "profession": "brexit destroyer",
+    "login": "admin",
+    "firstName": "Administrator",
+    "lastName": "Administrator",
+    "email": "admin@localhost",
+    "imageUrl": "",
+    "activated": true,
+    "langKey": "en",
+    "createdBy": "system",
+    "createdDate": null,
+    "lastModifiedBy": "system",
+    "lastModifiedDate": null,
+    "authorities": [
+      "ROLE_USER",
+      "ROLE_ADMIN"
+    ]
+  },
+  {
+    "name": "Amit",
+    "password": "Kumar",
+    "id": 4
+  },
+  {
+    "name": "MrAmit",
+    "password": "Kumar",
+    "id": 5
+  }
+]
