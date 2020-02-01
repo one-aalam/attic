@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const file = require('../lib/file');
-const readBody = require('../lib/read-body');
+const jsonBodyParser = require('../lib/json-body-parser');
 const generateId = require('../lib/generate-id');
 const dataPath = './fixtures/users.json';
 
@@ -27,7 +27,6 @@ const updateUser = async(req, res) => {
     const users = await file.read(dataPath);
     const user = users.find(user => user.id === req.params.id);
     const updUsers = users.filter(user => user.id !== req.params.id);
-    const body = await readBody(req);
     const updUser = { ...user, ...req.body, id: user.id };
     await file.write(JSON.stringify([...updUsers, updUser], null, 2), dataPath);
     res.status(200).send(updUser);
@@ -43,10 +42,10 @@ const deleteUser = async(req, res) => {
 const userRoutes = (app) => {
 
     router.get('/', getUsers); // GET ALL
-    router.post('/', createUser); // CREATE
+    router.post('/', jsonBodyParser, createUser); // CREATE
 
     router.get('/:id', getUser); // GET
-    router.patch('/:id', updateUser); // UPDATE
+    router.patch('/:id', jsonBodyParser, updateUser); // UPDATE
     router.delete('/:id', deleteUser); // DELETE
 
     app.use('/users', router);
