@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+const requireAuth = require('../lib/require-auth');
 const file = require('../lib/file');
 const generateId = require('../lib/generate-id');
 const NotFound = require('../lib/not-found-err');
@@ -69,6 +70,7 @@ const deleteUser = async(req, res) => {
 }
 
 const userRoutes = (app) => {
+    router.use(requireAuth);
 
     router.get('/', getUsers); // GET ALL
     router.post('/', bodyParser, upload.array('avatar'), createUser); // CREATE
