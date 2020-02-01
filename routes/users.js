@@ -18,8 +18,7 @@ const getUsers = async(req, res) => {
 const createUser = async(req, res) => {
     const users = await file.read(dataPath);
     const id = generateId();
-    const body = await readBody(req);
-    const newUser = { id, ...JSON.parse(body) };
+    const newUser = { id, ...req.body };
     await file.write(JSON.stringify([ ...users, newUser], null, 2), dataPath);
     res.status(201).send(newUser);
 }
@@ -29,7 +28,7 @@ const updateUser = async(req, res) => {
     const user = users.find(user => user.id === req.params.id);
     const updUsers = users.filter(user => user.id !== req.params.id);
     const body = await readBody(req);
-    const updUser = { ...user, ...JSON.parse(body), id: user.id };
+    const updUser = { ...user, ...req.body, id: user.id };
     await file.write(JSON.stringify([...updUsers, updUser], null, 2), dataPath);
     res.status(200).send(updUser);
 }
