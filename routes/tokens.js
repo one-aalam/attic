@@ -8,7 +8,7 @@ const findUsers = require('../lib/find-users');
 const requireAuth = require('../lib/require-auth');
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
-const jwtExpiresIn = parseInt(process.env.JWT_EXPIRES_IN) ;
+const jwtExpiresIn = process.env.JWT_EXPIRES_IN ;
 
 
 const createToken = user => jwt.sign({ id: user.id, name: user.name }, jwtSecretKey, {

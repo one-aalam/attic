@@ -15,10 +15,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const requireAuth = require('../lib/require-auth');
+const enforce = require('../lib/enforce');
 const file = require('../lib/file');
 const generateId = require('../lib/generate-id');
-const NotFound = require('../lib/not-found-err');
-const NotFounder = require('../lib/not-found-handler');
+const { NotFoundError } = require('../lib/custom-error');
+const { notFoundHandler, notAuthorizedHandler } = require('../lib/custom-error-handler');
 
 const dataPath = './fixtures/users.json';
 
@@ -26,7 +27,7 @@ const getUser = async(req, res) => {
     const users = await file.read(dataPath);
     const  user = users.find(user => user.id === req.params.id);
     if (!user) {
-        throw new NotFound();
+        throw new NotFoundError();
     }
     res.send(user);
 };
@@ -48,8 +49,9 @@ const createUser = async(req, res) => {
 const updateUser = async(req, res) => {
     const users = await file.read(dataPath);
     const user = users.find(user => user.id === req.params.id);
+    req.authorize(user);
     if (!user) {
-        throw new NotFound();
+        throw new NotFoundError();
     }
     const avatar = (req.files || []).map(file => `/uploads/${file.filename}`);
     const updUsers = users.filter(user => user.id !== req.params.id);
@@ -61,13 +63,19 @@ const updateUser = async(req, res) => {
 const deleteUser = async(req, res) => {
     const users = await file.read(dataPath);
     const user = users.find(user => user.id === req.params.id);
+    req.authorize(user);
     if (!user) {
-        throw new NotFound();
+        throw new NotFoundError();
     }
     const updUsers = users.filter(user => user.id !== req.params.id);
     await file.write(JSON.stringify(updUsers, null, 2), dataPath);
     res.sendStatus(204);
 }
+
+
+const updateUserPolicy = (user, resource) => user.id === resource.id;
+const deleteUserPolicy = updateUserPolicy;
+
 
 const userRoutes = (app) => {
     router.use(requireAuth);
@@ -75,9 +83,9 @@ const userRoutes = (app) => {
     router.get('/', getUsers); // GET ALL
     router.post('/', bodyParser, upload.array('avatar'), createUser); // CREATE
 
-    router.get('/:id', getUser, NotFounder); // GET
-    router.patch('/:id', bodyParser, upload.array('avatar'), updateUser, NotFounder ); // UPDATE
-    router.delete('/:id', deleteUser, NotFounder); // DELETE
+    router.get('/:id', getUser, notFoundHandler); // GET
+    router.patch('/:id', enforce(updateUserPolicy), bodyParser, upload.array('avatar'), updateUser, notAuthorizedHandler, notFoundHandler ); // UPDATE
+    router.delete('/:id', enforce(deleteUserPolicy), deleteUser, notAuthorizedHandler, notFoundHandler); // DELETE
 
     app.use('/users', router);
 };
