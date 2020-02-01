@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+//
+const logger = require('./lib/logger');
+
 // create an instance of express to serve our end points
 const app = express();
 
@@ -10,6 +13,7 @@ const app = express();
 // including handling JSON data
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
+app.use(logger);
 app.use(cookieParser());
 
 // this is where we'll handle our various routes from
