@@ -5,6 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const compress = require('compression');
 const serveStatic = require('serve-static');
+const helmet = require('helmet');
 
 //
 const logger = require('./lib/logger');
@@ -16,6 +17,7 @@ const findUsers = require('./lib/find-users');
 const app = express();
 
 // configure our express instance with useful global middlewares
+app.use(helmet());
 app.use(cookieParser()); // You've got some cookie? No? You ain't a friend!
 app.use(logger); // we gotta know what's coming our way!
 app.use(compress(/*{ threshold: 0}*/)); // quick performance win! (Not sure? put `threshold = 0`, you curious fella...)
