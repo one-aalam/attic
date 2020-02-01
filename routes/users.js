@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const file = require('../lib/file');
-const jsonBodyParser = require('../lib/json-body-parser');
+const bodyParser = require('body-parser').json({
+    limit: '100kb'
+});
 const generateId = require('../lib/generate-id');
 const NotFound = require('../lib/not-found-err');
 const NotFounder = require('../lib/not-found-handler');
@@ -54,10 +56,10 @@ const deleteUser = async(req, res) => {
 const userRoutes = (app) => {
 
     router.get('/', getUsers); // GET ALL
-    router.post('/', jsonBodyParser, createUser); // CREATE
+    router.post('/', bodyParser, createUser); // CREATE
 
     router.get('/:id', getUser, NotFounder); // GET
-    router.patch('/:id', jsonBodyParser, updateUser, NotFounder ); // UPDATE
+    router.patch('/:id', bodyParser, updateUser, NotFounder ); // UPDATE
     router.delete('/:id', deleteUser, NotFounder); // DELETE
 
     app.use('/users', router);
