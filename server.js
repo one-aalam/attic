@@ -16,6 +16,7 @@ app.use(cookieParser()); // You've got some cookie? No? You ain't a friend!
 app.use(logger); // we gotta know what's coming our way!
 app.use(compress(/*{ threshold: 0}*/)); // quick performance win! (Not sure? put `threshold = 0`, you curious fella...)
 app.use(serveStatic(path.join(__dirname, 'public')));
+app.use('/uploads', serveStatic(path.join(__dirname, 'uploads')));
 
 // this is where we'll handle our various routes from
 const routes = require('./routes/routes.js')(app);
