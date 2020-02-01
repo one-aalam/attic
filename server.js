@@ -8,6 +8,8 @@ const serveStatic = require('serve-static');
 //
 const logger = require('./lib/logger');
 const basicAuth = require('./lib/basic-auth');
+const tokenAuth = require('./lib/token-auth');
+const findUsers = require('./lib/find-users');
 
 // create an instance of express to serve our end points
 const app = express();
@@ -18,7 +20,9 @@ app.use(logger); // we gotta know what's coming our way!
 app.use(compress(/*{ threshold: 0}*/)); // quick performance win! (Not sure? put `threshold = 0`, you curious fella...)
 app.use(serveStatic(path.join(__dirname, 'public')));
 app.use('/uploads', serveStatic(path.join(__dirname, 'uploads')));
-app.use(basicAuth);
+
+app.use(tokenAuth(findUsers.byUserToken));
+app.use(basicAuth(findUsers.byNameAndPassword));
 
 // this is where we'll handle our various routes from
 const routes = require('./routes/routes.js')(app);
