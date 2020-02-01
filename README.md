@@ -1,8 +1,6 @@
 # Attic
 
-
-
-
+`But the real interesting stuff is in the cellar and the attic`
 
 
 
