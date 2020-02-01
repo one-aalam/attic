@@ -1,7 +1,7 @@
 // load up the express framework and body-parser helper
 const express = require('express');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const compress = require('compression');
 
 //
 const logger = require('./lib/logger');
@@ -9,12 +9,10 @@ const logger = require('./lib/logger');
 // create an instance of express to serve our end points
 const app = express();
 
-// configure our express instance with some body-parser settings
-// including handling JSON data
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(logger);
+// configure our express instance with useful global middlewares
+app.use(cookieParser()); // You've got some cookie? No? You ain't a friend!
+app.use(logger); // we gotta know what's coming our way!
+app.use(compress(/*{ threshold: 0}*/)); // quick performance win! (Not sure? put `threshold = 0`, you curious fella...)
 
 // this is where we'll handle our various routes from
 const routes = require('./routes/routes.js')(app);
