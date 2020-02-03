@@ -12,7 +12,7 @@ const bodyParser = bodyParse.json({
 });
 const storage = multer.diskStorage({
     destination: function (_, __, cb) {
-      cb(null, path.join(__dirname, '../uploads'))
+      cb(null, path.join(__dirname, '../../uploads'))
     },
     filename: function (_, file, cb) {
       cb(null, Date.now() + path.extname(file.originalname)) //Appending extension
@@ -27,7 +27,7 @@ import { generateId } from '../lib/generate-id';
 import { NotFoundError } from '../lib/custom-error';
 import { notFoundHandler, notAuthorizedHandler } from '../lib/custom-error-handler';
 
-const dataPath = './fixtures/users.json';
+const dataPath = path.join(__dirname, '../fixtures/users.json');
 
 const getUser = async(req: Request, res: Response) => {
     const users:any = await file.readFile(dataPath);

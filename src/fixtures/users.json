@@ -35,5 +35,15 @@
     "authorities": [
       "ROLE_USER"
     ]
+  },
+  {
+    "id": "c3c66bfa04a69072",
+    "name": "oneaalam",
+    "password": "password",
+    "email": "aalam@localhost",
+    "avatar": [
+      "/uploads/1580747241280.png",
+      "/uploads/1580747241289.png"
+    ]
   }
 ]
