@@ -1,17 +1,19 @@
-require('dotenv').config();
+import 'dotenv/config';
 // load up the express framework and body-parser helper
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const compress = require('compression');
-const serveStatic = require('serve-static');
-const helmet = require('helmet');
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import compress from 'compression';
+import serveStatic from 'serve-static';
+import helmet from 'helmet';
 
 //
-const logger = require('./lib/logger');
-const basicAuth = require('./lib/basic-auth');
-const tokenAuth = require('./lib/token-auth');
-const findUsers = require('./lib/find-users');
+import { logger }  from './lib/logger';
+import { basicAuth } from './lib/basic-auth';
+import { tokenAuth } from './lib/token-auth';
+import * as findUsers from './lib/find-users';
+
+import { appRouter } from './routes/routes';
 
 // create an instance of express to serve our end points
 const app = express();
@@ -28,8 +30,8 @@ app.use(tokenAuth(findUsers.byUserToken));
 app.use(basicAuth(findUsers.byNameAndPassword));
 
 // this is where we'll handle our various routes from
-const routes = require('./routes/routes.js')(app);
+appRouter(app);
 // finally, launch our server on port 3001.
-const server = app.listen(8080, () => {
-    console.log('listening on port %s...', server.address().port);
+app.listen(8080, (_) => {
+    console.log('listening on port %s...', 8080);
 });

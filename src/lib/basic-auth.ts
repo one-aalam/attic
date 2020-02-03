@@ -1,4 +1,12 @@
-const basicAuth = finderFn => async (req, res, next) => {
+import { NextFunction, Request, Response } from 'express';
+import { IUser } from '../interfaces/';
+
+export interface IUserRequest extends Request {
+    user?: IUser
+}
+
+
+export const basicAuth: Function = (finderFn: Function) => async (req: IUserRequest, res: Response, next: NextFunction) => {
     const header = req.headers.authorization || '';
     const [ type, payload ] = header.split(' ');
     if (type === 'Basic') {
@@ -16,5 +24,3 @@ const basicAuth = finderFn => async (req, res, next) => {
     // of blowing up if none are included!
     next();
 }
-
-module.exports = basicAuth;

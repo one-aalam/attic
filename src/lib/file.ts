@@ -1,6 +1,6 @@
-const fs = require('fs');
+import * as fs from 'fs';
 
-const readFile = async(filePath, options = {
+export const readFile = async(filePath: string, options = {
         returnJson: true,
         encoding: 'utf8'
     }) => {
@@ -14,7 +14,7 @@ const readFile = async(filePath, options = {
     })
 };
 
-const writeFile = async(fileData, filePath, options = {
+export const writeFile = async(fileData: any, filePath: string, options = {
     encoding: 'utf8'
 }) => {
     return new Promise((resolve, reject) => {
@@ -26,6 +26,3 @@ const writeFile = async(fileData, filePath, options = {
         });
     })
 };
-
-exports.read = readFile;
-exports.write = writeFile;

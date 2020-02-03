@@ -1,8 +1,9 @@
 // load up our shiny new route for users
-const userRoutes = require('./users');
-const tokenRoutes = require('./tokens');
+import { Express } from 'express';
+import { userRoutes } from './users';
+import { tokenRoutes } from './tokens';
 
-const appRouter = (app) => {
+export const appRouter = (app: Express) => {
     // we've added in a default route here that handles empty routes
     // at the base API url
     app.get('/', (_, res) => res.send('welcome to the development api-server'));
@@ -11,5 +12,3 @@ const appRouter = (app) => {
     userRoutes(app);
     tokenRoutes(app);
 };
-
-module.exports = appRouter;

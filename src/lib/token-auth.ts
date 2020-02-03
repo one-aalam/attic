@@ -1,13 +1,17 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import { NextFunction, Response } from 'express';
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-const tokenAuth = finderFn => async(req, res, next) => {
+import { IUserRequest } from '../interfaces/';
+
+
+export const tokenAuth: Function = (finderFn: Function) => async(req: IUserRequest, res: Response, next: NextFunction) => {
     const header = req.headers.authorization || ''; // @TODO: req.cookies.token
     const [ type, token ] = header.split(' ');
     if (type === 'Bearer') {
         let payload;
         try {
-            payload = jwt.verify(token, jwtSecretKey);
+            payload = jwt.verify(token, jwtSecretKey as string);
         } catch(err) {
             res.sendStatus(401);
             return;
@@ -19,5 +23,3 @@ const tokenAuth = finderFn => async(req, res, next) => {
     // of blowing up if none are included!
     next();
 }
-
-module.exports = tokenAuth;
