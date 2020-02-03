@@ -2,6 +2,7 @@ import 'module-alias/register';
 import 'dotenv/config';
 // load up the express framework and body-parser helper
 import express from 'express';
+import cors from 'cors';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import compress from 'compression';
@@ -20,6 +21,7 @@ import { appRouter } from './routes/routes';
 const app = express();
 
 // configure our express instance with useful global middlewares
+app.use(cors());
 app.use(helmet());
 app.use(cookieParser()); // You've got some cookie? No? You ain't a friend!
 app.use(logger); // we gotta know what's coming our way!
