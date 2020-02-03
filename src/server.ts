@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import 'dotenv/config';
 // load up the express framework and body-parser helper
 import express from 'express';

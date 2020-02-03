@@ -7,10 +7,10 @@ const bodyParser = bodyParse.json({
     limit: '100kb'
 });
 
-import { IUser, IUserRequest } from '../interfaces';
+import { IUser, IUserRequest } from 'interfaces';
 
-import * as findUsers from '../lib/find-users';
-import { requireAuth }from '../lib/require-auth';
+import * as findUsers from 'lib/find-users';
+import { requireAuth }from 'lib/require-auth';
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN ;

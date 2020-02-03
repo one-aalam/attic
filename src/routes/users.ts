@@ -3,7 +3,7 @@ import path from 'path';
 import bodyParse from 'body-parser';
 import multer, {  } from 'multer';
 
-import { IUser, IUserAndAuthFnRequest } from '../interfaces';
+import { IUser, IUserAndAuthFnRequest } from 'interfaces';
 
 const router: Router = express.Router();
 
@@ -20,12 +20,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-import { requireAuth } from '../lib/require-auth';
-import { enforce } from '../lib/enforce';
-import * as file from '../lib/file';
-import { generateId } from '../lib/generate-id';
-import { NotFoundError } from '../lib/custom-error';
-import { notFoundHandler, notAuthorizedHandler } from '../lib/custom-error-handler';
+import { requireAuth } from 'lib/require-auth';
+import { enforce } from 'lib/enforce';
+import * as file from 'lib/file';
+import { generateId } from 'lib/generate-id';
+import { NotFoundError } from 'lib/custom-error';
+import { notFoundHandler, notAuthorizedHandler } from 'lib/custom-error-handler';
 
 const dataPath = path.join(__dirname, '../fixtures/users.json');
 
