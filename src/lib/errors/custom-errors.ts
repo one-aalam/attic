@@ -8,6 +8,7 @@ type ErrorCode =
   | 'ENTITY_NOT_FOUND'
   | 'BAD_USER_INPUT'
   | 'INVALID_TOKEN'
+  | 'MISSING_TOKEN'
   | 'USER_NOT_AUTHORIZED'
   | 'USER_NOT_FOUND';
 
@@ -46,6 +47,13 @@ export class BadUserInputError extends CustomError {
 export class InvalidTokenError extends CustomError {
   constructor(message = 'Authentication token is invalid.') {
     super(message, 'INVALID_TOKEN', 401);
+    this.name = this.constructor.name;
+  }
+}
+
+export class MissingTokenError extends CustomError {
+  constructor(message = 'Authentication token is missing.') {
+    super(message, 'MISSING_TOKEN', 401);
     this.name = this.constructor.name;
   }
 }

@@ -9,8 +9,7 @@ import { requireAuth } from 'lib/require-auth';
 import { enforce } from 'lib/enforce';
 import * as file from 'lib/file';
 import { generateId } from 'lib/generate-id';
-import { NotFoundError } from 'lib/custom-error';
-import { notFoundHandler, notAuthorizedHandler } from 'lib/custom-error-handler';
+import { UserNotFoundError, customErrorRequestHandler } from 'lib/errors';
 
 const router: Router = express.Router();
 
@@ -34,7 +33,7 @@ const getUser = async (req: Request, res: Response) => {
   const users: any = await file.readFile(dataPath);
   const user = users.find((user: IUser) => user.id === req.params.id);
   if (!user) {
-    throw new NotFoundError();
+    throw new UserNotFoundError();
   }
   res.send(user);
 };
@@ -59,11 +58,13 @@ const updateUser = async (req: IUserAndAuthFnRequest, res: Response) => {
   const user = users.find((user: IUser) => user.id === req.params.id);
   req.authorize!(user);
   if (!user) {
-    throw new NotFoundError();
+    throw new UserNotFoundError();
   }
   // @ts-ignore: Uncallable code error
-  const avatar = (req.files || []).map((file: Express.Multer.File) => `/uploads/${file.filename}`);
-  const updUsers = users.filter((user: IUser) => user.id !== req.params.id);
+  const avatar = (req.files || []).map(
+    (_file: Express.Multer.File) => `/uploads/${_file.filename}`,
+  );
+  const updUsers = users.filter((_user: IUser) => _user.id !== req.params.id);
   const updUser = { ...user, ...req.body, id: user.id, avatar };
   await file.writeFile(JSON.stringify([...updUsers, updUser], null, 2), dataPath);
   res.status(200).send(updUser);
@@ -71,12 +72,12 @@ const updateUser = async (req: IUserAndAuthFnRequest, res: Response) => {
 
 const deleteUser = async (req: IUserAndAuthFnRequest, res: Response) => {
   const users: any = await file.readFile(dataPath);
-  const user = users.find((user: IUser) => user.id === req.params.id);
+  const user = users.find((_user: IUser) => _user.id === req.params.id);
   req.authorize!(user);
   if (!user) {
-    throw new NotFoundError();
+    throw new UserNotFoundError();
   }
-  const updUsers = users.filter((user: IUser) => user.id !== req.params.id);
+  const updUsers = users.filter((_user: IUser) => _user.id !== req.params.id);
   await file.writeFile(JSON.stringify(updUsers, null, 2), dataPath);
   res.sendStatus(204);
 };
@@ -90,22 +91,20 @@ export const userRoutes = (app: Express) => {
   router.get('/', getUsers); // GET ALL
   router.post('/', bodyParser, upload.array('avatar'), createUser); // CREATE
 
-  router.get('/:id', getUser, notFoundHandler); // GET
+  router.get('/:id', getUser, customErrorRequestHandler); // GET
   router.patch(
     '/:id',
     enforce(updateUserPolicy),
     bodyParser,
     upload.array('avatar'),
     updateUser,
-    notAuthorizedHandler,
-    notFoundHandler,
+    customErrorRequestHandler
   ); // UPDATE
   router.delete(
     '/:id',
     enforce(deleteUserPolicy),
     deleteUser,
-    notAuthorizedHandler,
-    notFoundHandler,
+    customErrorRequestHandler
   ); // DELETE
 
   app.use('/users', router);
