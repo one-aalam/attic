@@ -1,22 +1,27 @@
-import jwt from 'jsonwebtoken';
 import { NextFunction, Response } from 'express';
-const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
+import { verifyToken } from './jwt';
+import { MissingTokenError, InvalidTokenError } from './errors';
 import { IUserRequest } from '../interfaces/';
 
 
-export const tokenAuth: Function = (finderFn: Function) => async(req: IUserRequest, res: Response, next: NextFunction) => {
+export const tokenAuth: Function = (finderFn: Function) => async(req: IUserRequest, _: Response, next: NextFunction) => {
     const header = req.headers.authorization || ''; // @TODO: req.cookies.token
+    if (!header) {
+        throw new MissingTokenError();
+    }
     const [ type, token ] = header.split(' ');
     if (type === 'Bearer') {
         let payload;
         try {
-            payload = jwt.verify(token, jwtSecretKey as string);
+            payload = verifyToken(token)
         } catch(err) {
-            res.sendStatus(401);
-            return;
+            throw new InvalidTokenError();
         }
         const user = await finderFn(payload);
+        if (!user) {
+            throw new InvalidTokenError('Invalid token: User not found.');
+        }
         req.user = user;
     }
     // 'Bearer' has one responsibility: to verify Bearer credentials. It shouldn’t also have the responsibility
