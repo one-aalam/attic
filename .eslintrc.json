@@ -29,7 +29,8 @@
       "import/prefer-default-export": 0,
       "import/no-cycle": 0,
       "import/extensions": 0,
-      "indent": ["error", 2]
+      "indent": ["error", 2],
+      "interface-name" : [true, "never-prefix"]
     },
     "settings": {
       // Allows us to lint absolute imports within codebase
