@@ -1,14 +1,20 @@
-// load up our shiny new route for users
 import { Express } from 'express';
-import { userRoutes } from './users';
-import { tokenRoutes } from './tokens';
+import users from './users.route';
+import auth from './auth.route';
+import { customErrorRequestHandler as handleErr } from 'lib/errors/custom-error-handler';
+import { RouteNotFoundError } from 'lib/errors';
 
-export const appRouter = (app: Express) => {
-    // we've added in a default route here that handles empty routes
-    // at the base API url
-    app.get('/', (_, res) => res.send('welcome to the development api-server'));
+export const setUpPublicRoutes = (app: Express) => {
+    app.get('/', (_, res) => res.send('welcome to the Attic api-server'));
+    app.use('/auth', auth);
+};
 
-    // run our user route module here to complete the wire up
-    userRoutes(app);
-    tokenRoutes(app);
+export const setUpPrivateRoutes = (app: Express) => {
+    app.use('/users', users);
+};
+
+export const setUpErrorHandling = (app: Express) => {
+
+    app.use((req, _res, next) => next(new RouteNotFoundError(req.originalUrl)));
+    app.use(handleErr);
 };
