@@ -1,5 +1,5 @@
 import { ErrorRequestHandler, Response, NextFunction, Errback } from 'express';
-import { pick } from 'lib/choose';
+import { pick } from 'lib/utils/choose';
 import { CustomError } from './custom-errors';
 
 export const customErrorRequestHandler: ErrorRequestHandler = (error: Errback, _req, res: Response, _next: NextFunction) => {

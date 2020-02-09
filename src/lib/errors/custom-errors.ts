@@ -10,6 +10,8 @@ type ErrorCode =
   | 'INVALID_TOKEN'
   | 'MISSING_TOKEN'
   | 'USER_NOT_AUTHORIZED'
+  | 'UNPROCESSABLE_ENTITY'
+  | 'ATTRIBUTES_IN_USE'
   | 'USER_NOT_FOUND';
 
 export class CustomError extends Error {
@@ -68,6 +70,20 @@ export class UserNotAuthorizedError extends CustomError {
 export class UserNotFoundError extends CustomError {
   constructor(message: string = 'User is not found') {
       super(message, 'USER_NOT_FOUND', 404);
+      this.name = this.constructor.name;
+  }
+}
+
+export class UnprocessableEntityError extends CustomError {
+  constructor(message: string = 'Unprocessable Entity') {
+      super(message, 'UNPROCESSABLE_ENTITY', 422);
+      this.name = this.constructor.name;
+  }
+}
+
+export class UsedEntityError extends CustomError {
+  constructor(message: string = 'Seems already used') {
+      super(message, 'ATTRIBUTES_IN_USE', 409);
       this.name = this.constructor.name;
   }
 }
