@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { InvalidTokenError } from './errors';
+import { InvalidTokenError } from '../errors';
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
