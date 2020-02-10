@@ -1,5 +1,5 @@
 import 'module-alias/register';
-import 'dotenv/config';
+import config from 'config';
 import 'reflect-metadata';
 // load up the express framework and body-parser helper
 import express from 'express';
@@ -21,11 +21,11 @@ import { initRoutes } from 'routes';
 const createDatabaseConnection = (): Promise<Connection> =>
   createConnection({
     type: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
+    host: config.db.host,
+    port: config.db.port,
+    username: config.db.username,
+    password: config.db.password,
+    database: config.db.database,
     entities: Object.values(entities),
     synchronize: true,
   });
