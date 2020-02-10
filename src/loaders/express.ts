@@ -10,6 +10,11 @@ import logger from 'lib/middlewares/logger';
 import { initRoutes } from 'routes';
 
 export const appInit = (app: Express) => {
+  // Setup heartbeat/health endpoints
+  app.get('/status', (_, res) => res.status(200).end());
+  app.head('/status', (_, res) => res.status(200).end());
+  // Enabled to show real origin IP in logs, if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+  app.enable('trust proxy');
   // configure our express instance with useful global middlewares
   app.use(cors());
   app.use(helmet());
