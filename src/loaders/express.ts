@@ -6,7 +6,7 @@ import compress from 'compression';
 import serveStatic from 'serve-static';
 import helmet from 'helmet';
 
-import { logger } from 'lib/middlewares/logger';
+import logger from 'lib/middlewares/logger';
 import { initRoutes } from 'routes';
 
 export const appInit = (app: Express) => {

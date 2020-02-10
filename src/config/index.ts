@@ -9,7 +9,7 @@ export default {
     expiresIn: process.env.JWT_EXPIRES_IN,
   },
   logs: {
-    level: process.env.LOG_LEVEL || 'tiny',
+    level: process.env.LOG_LEVEL || 'info',
   },
   db: {
     host: process.env.DB_HOST,
