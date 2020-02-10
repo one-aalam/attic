@@ -5,6 +5,7 @@ import express from 'express';
 
 import { load } from 'loaders';
 import { logger } from 'loaders/logger';
+import { clusturize }  from 'loaders/cluster';
 
 const initApp = async(): Promise<void> => {
 
@@ -25,4 +26,8 @@ const initApp = async(): Promise<void> => {
   });
 };
 
-initApp();
+if (config.cluster) {
+  clusturize(initApp);
+} else {
+  initApp();
+}

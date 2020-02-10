@@ -4,6 +4,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 export default {
   port: Number(process.env.NODE_PORT),
+  cluster: process.env.USE_CLUSTER && parseInt(process.env.USE_CLUSTER) === 1 ? true : false ,
   jwt: {
     secretKey: process.env.JWT_SECRET_KEY,
     expiresIn: process.env.JWT_EXPIRES_IN,
