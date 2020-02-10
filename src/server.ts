@@ -16,7 +16,7 @@ import * as entities from './entities';
 //
 import { logger } from './lib/middlewares/logger';
 
-import { setUpPrivateRoutes, setUpPublicRoutes, setUpErrorHandling } from './routes/routes';
+import { initRoutes } from 'routes';
 
 const createDatabaseConnection = (): Promise<Connection> =>
   createConnection({
@@ -51,10 +51,8 @@ const initExpress = (): void => {
   app.use(serveStatic(path.join(__dirname, 'public')));
   app.use('/uploads', serveStatic(path.join(__dirname, 'uploads')));
 
-  // this is where we'll handle our various routes from
-  setUpPublicRoutes(app);
-  setUpPrivateRoutes(app);
-  setUpErrorHandling(app);
+  // Initialize routes
+  initRoutes(app);
   // finally, launch our server on port 3001.
   app.listen(8080, _ => {
     console.log('listening on port %s...', 8080);

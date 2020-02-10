@@ -18,3 +18,9 @@ export const setUpErrorHandling = (app: Express) => {
     app.use((req, _res, next) => next(new RouteNotFoundError(req.originalUrl)));
     app.use(handleErr);
 };
+
+export const initRoutes = (app: Express) => {
+    setUpPublicRoutes(app);
+    setUpPrivateRoutes(app);
+    setUpErrorHandling(app);
+}
