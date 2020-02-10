@@ -9,34 +9,13 @@ import cookieParser from 'cookie-parser';
 import compress from 'compression';
 import serveStatic from 'serve-static';
 import helmet from 'helmet';
-import { createConnection, Connection } from 'typeorm';
 
-import * as entities from './entities';
+import { tryDbInit } from 'loaders/db'
 
-//
+
 import { logger } from './lib/middlewares/logger';
 
 import { initRoutes } from 'routes';
-
-const createDatabaseConnection = (): Promise<Connection> =>
-  createConnection({
-    type: 'postgres',
-    host: config.db.host,
-    port: config.db.port,
-    username: config.db.username,
-    password: config.db.password,
-    database: config.db.database,
-    entities: Object.values(entities),
-    synchronize: true,
-  });
-
-const establishDatabaseConnection = async (): Promise<void> => {
-  try {
-    await createDatabaseConnection();
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const initExpress = (): void => {
   // create an instance of express to serve our end points
@@ -54,13 +33,13 @@ const initExpress = (): void => {
   // Initialize routes
   initRoutes(app);
   // finally, launch our server on port 3001.
-  app.listen(8080, _ => {
-    console.log('listening on port %s...', 8080);
+  app.listen(config.port, _ => {
+    console.log('listening on port %s...', config.port);
   });
 };
 
 const initApp = async (): Promise<void> => {
-  await establishDatabaseConnection();
+  await tryDbInit();
   initExpress();
 };
 
