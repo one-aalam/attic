@@ -1,13 +1,12 @@
 const cluster = require('cluster');
-const os = require('os');
+const numCPUs = require('os').cpus().length; // Get total CPU cores.
 
 export const clusturize = (initApp: Function) => {
   if (cluster.isMaster) {
-    // Get total CPU cores.
-    const cpuCount = os.cpus().length;
+    console.log(`Master ${process.pid} is running`);
 
-    // Spawn a worker for every core.
-    for (let j = 0; j < cpuCount; j++) {
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
       cluster.fork();
     }
     cluster.on( 'online', function( worker: any ) {
@@ -19,6 +18,8 @@ export const clusturize = (initApp: Function) => {
       cluster.fork();
     });
   } else {
+    // Workers can share any TCP connection
+    // In this case it is our Express's HTTP server
     initApp();
   }
 }

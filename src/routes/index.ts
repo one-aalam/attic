@@ -1,4 +1,5 @@
 import { Express } from 'express';
+import config from 'config';
 import users from './users.route';
 import auth from './auth.route';
 import { customErrorRequestHandler as handleErr } from 'lib/errors/custom-error-handler';
@@ -14,7 +15,11 @@ export const setUpPrivateRoutes = (app: Express) => {
 };
 
 export const setUpErrorHandling = (app: Express) => {
-
+    if (config.cluster) {
+        app.use((_, __) => {
+            console.log("Worker " , process.pid, " handled the request");
+        })
+    }
     app.use((req, _res, next) => next(new RouteNotFoundError(req.originalUrl)));
     app.use(handleErr);
 };

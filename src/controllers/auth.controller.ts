@@ -1,9 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { createToken } from 'lib/utils/jwt';
+import mailer from 'lib/utils/mailer';
 
 import * as userService from 'services/user.service';
 import { BadUserInputError, UserNotFoundError, UserNotAuthorizedError, UsedEntityError, catchErrors } from 'lib/errors';
 
+const mailOptions = {
+  from: '"Attic Team" <from@attic-server.com>',
+  to: '',
+  subject: 'Hiya! welcome to Attic',
+  text: 'Hey there, it’s nice to see you here ;) ',
+  html: '<b>Hey there! </b><br> it’s nice to see you here ;)'
+};
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -60,6 +68,13 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
   } catch(err) {
     throw new UsedEntityError(`Username or email already in use`);
   }
+  // https://blog.mailtrap.io/sending-emails-with-nodemailer/
+  await mailer.sendMail({...mailOptions, to: email}, (error: any, info: any) => {
+    if (error) {
+        return console.log(error);
+    }
+    console.log('Message sent: %s', info.messageId);
+  })
 
   res.status(201).send(user.toResponseObject());
 });
