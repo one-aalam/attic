@@ -1,17 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { createToken } from 'lib/utils/jwt';
+
+import config from 'config';
+import { createToken, createEphemeralToken, verifyEphemeralToken } from 'lib/utils/jwt';
 import mailer from 'lib/utils/mailer';
 
 import * as userService from 'services/user.service';
-import { BadUserInputError, UserNotFoundError, UserNotAuthorizedError, UsedEntityError, catchErrors } from 'lib/errors';
-
-const mailOptions = {
-  from: '"Attic Team" <from@attic-server.com>',
-  to: '',
-  subject: 'Hiya! welcome to Attic',
-  text: 'Hey there, it’s nice to see you here ;) ',
-  html: '<b>Hey there! </b><br> it’s nice to see you here ;)'
-};
+import { BadUserInputError, UserNotFoundError, UserNotAuthorizedError, UsedEntityError, catchErrors, InvalidTokenError } from 'lib/errors';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -68,13 +62,29 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
   } catch(err) {
     throw new UsedEntityError(`Username or email already in use`);
   }
+
+  const token = createEphemeralToken({ username: user.username, email: user.email, password: user.password});
   // https://blog.mailtrap.io/sending-emails-with-nodemailer/
-  await mailer.sendMail({...mailOptions, to: email}, (error: any, info: any) => {
+  await mailer.sendMail({
+    from: '"Attic Team" <from@attic-server.com>',
+    to: email,
+    subject: 'Hiya! welcome to Attic - Activation Link',
+    text: `Hey there, it’s nice to see you here ;). Please use the link to activate your acccount`,
+    html: `<b>Hey ${user.username}! </b><br> it’s nice to see you here ;)
+
+      <h1>You're just one step away from being a proud Attic member!</h1>
+      <p>Please visit <a href="${config.clientUrl}/auth/activate/${token}">${config.clientUrl}/auth/activate/${token.substr(0, 12)}...</a> to activate your account</p>
+
+      Thanks,
+      Team Attic
+    `
+  }, (error: any, info: any) => {
     if (error) {
         return console.log(error);
     }
     console.log('Message sent: %s', info.messageId);
   })
+
 
   res.status(201).send(user.toResponseObject());
 });
@@ -112,3 +122,23 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
   });
   res.status(204).send();
 };
+
+export const activate = async (req: Request, res: Response, _: NextFunction) => {
+  const token = req.params.token;
+    let payload;
+    try {
+        payload = verifyEphemeralToken(token)
+    } catch(err) {
+        throw new InvalidTokenError();
+    }
+    const user = await userService.find({ where: { username: payload.username } });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    // const isPasswordValid = await user?.comparePassword(payload.password)
+    // if (!isPasswordValid) {
+    //   throw new UserNotAuthorizedError();
+    // }
+    res.send(`Hey ${user.username}! You can use attic now`);
+}

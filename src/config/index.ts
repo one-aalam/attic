@@ -34,5 +34,6 @@ export default {
   },
   dirs: {
     uploads: '/uploads',
-  }
+  },
+  clientUrl: process.env.CLIENT_URL
 };

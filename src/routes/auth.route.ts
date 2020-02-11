@@ -11,6 +11,7 @@ const bodyParser = bodyParse.json({
 
 router.post('/login', [ bodyParser ], authController.login); // login
 router.post('/register', [ bodyParser ], authController.register); // register
+router.get('/activate/:token', authController.activate); // register
 
 
 export default router;
