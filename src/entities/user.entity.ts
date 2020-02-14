@@ -42,6 +42,9 @@ class User extends BaseEntity {
   @Column({ default: false })
   active!: boolean;
 
+  @Column({ default: '' })
+  resetPasswordToken!: string;
+
   @Column({
     type: "simple-array",
     default: ['ROLE_USER'],

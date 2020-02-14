@@ -123,7 +123,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
 };
 
 export const activate = async (req: Request, res: Response, _: NextFunction) => {
-  const token = req.params.token;
+    const token = req.params.token;
     let payload;
     try {
         payload = verifyEphemeralToken(token)
@@ -142,3 +142,71 @@ export const activate = async (req: Request, res: Response, _: NextFunction) => 
     }
     return res.send(`Hey ${user.username}! We've met with an error while updating yourr details. Please try again!`);
 }
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { email } = req.body;
+
+    //Get user from the database
+  const user = await userService.find({ where: { email }});
+    if (!user) {
+      next(new UserNotFoundError());
+  }
+  const token = createEphemeralToken({ username: user.username, email: user.email, password: user.password});
+
+  user.resetPasswordToken = token;
+  const isUpdated = await user.save();
+  if (isUpdated) {
+    return res.send(`Hey ${user.username}! You can use attic now`);
+  }
+
+  await mailer.sendMail({
+    from: '"Attic Team" <from@attic-server.com>',
+    to: email,
+    subject: 'Hiya! welcome to Attic - Password Rest Link',
+    text: `Hey there, Please use the link to reset your acccount's password`,
+    html: `<b>Hey ${user.username}! </b>
+
+      <h1>Please use the link to reset your acccount's password!</h1>
+      <p>Please visit <a href="${config.clientUrl}/auth/password/reset/${token}">${config.clientUrl}/auth/password/reset/${token.substr(0, 12)}...</a> to activate your account</p>
+
+      Thanks,
+      Team Attic
+    `
+  }, (error: any, _info: any) => {
+    if (error) {
+          return res.json({
+            message: error.message
+          });
+    }
+    return res.json({
+      message: `Email has been sent to ${email}. Follow the instruction to activate your account`
+    });
+  })
+};
+
+export const resetPassword = async (req: Request, res: Response, _: NextFunction) => {
+  const { resetPasswordToken, newPassword } = req.body;
+
+  if (resetPasswordToken) {
+    let payload;
+    try {
+        payload = verifyEphemeralToken(resetPasswordToken)
+    } catch(err) {
+        throw new InvalidTokenError(`Expired link. Try again`);
+    }
+    const user = await userService.find({ where: { username: payload.username } });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    user.password = newPassword;
+    user.resetPasswordToken = '';
+    const isUpdated = await user.save();
+    if (isUpdated) {
+      return res.send(`Hey ${user.username}! You can use attic now`);
+    }
+    return res.send(`Hey ${user.username}! We've met with an error while updating yourr details. Please try again!`);
+  } else {
+    return res.send(`Hey, the token seems missing in the call!`);
+  }
+};
