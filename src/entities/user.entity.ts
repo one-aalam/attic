@@ -39,6 +39,9 @@ class User extends BaseEntity {
   })
   avatarUrl?: string[];
 
+  @Column({ default: false })
+  active!: boolean;
+
   @Column({
     type: "simple-array",
     default: ['ROLE_USER'],

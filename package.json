@@ -9,7 +9,8 @@
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "prod": "node -r ./tsconfig-paths.js dist/server.js",
     "start:prod": "pm2 start --name 'attic' node -- -r ./tsconfig-paths.js dist/server.js",
-    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate"
   },
   "keywords": [],
   "author": "",

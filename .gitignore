@@ -1,3 +1,4 @@
+@@ -1,107 +1,6 @@
 # Logs
 logs
 *.log
@@ -105,3 +106,5 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+ormconfig.json
