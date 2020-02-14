@@ -57,7 +57,8 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
     user = await userService.create({
       username,
       email,
-      password
+      password,
+      active: false
     });
   } catch(err) {
     throw new UsedEntityError(`Username or email already in use`);
@@ -84,8 +85,6 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
     }
     console.log('Message sent: %s', info.messageId);
   })
-
-
   res.status(201).send(user.toResponseObject());
 });
 
@@ -136,9 +135,10 @@ export const activate = async (req: Request, res: Response, _: NextFunction) => 
       throw new UserNotFoundError();
     }
 
-    // const isPasswordValid = await user?.comparePassword(payload.password)
-    // if (!isPasswordValid) {
-    //   throw new UserNotAuthorizedError();
-    // }
-    res.send(`Hey ${user.username}! You can use attic now`);
+    user.active = true;
+    const isSaved = await user.save();
+    if (isSaved) {
+      return res.send(`Hey ${user.username}! You can use attic now`);
+    }
+    return res.send(`Hey ${user.username}! We've met with an error while updating yourr details. Please try again!`);
 }
