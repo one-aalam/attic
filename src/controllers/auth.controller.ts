@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
-import config from 'config';
 import { createToken, createEphemeralToken, verifyEphemeralToken } from 'lib/utils/jwt';
-import mailer from 'lib/utils/mailer';
+
+import ee, { EVENTS } from 'lib/utils/ee';
 
 import * as userService from 'services/user.service';
 import { BadUserInputError, UserNotFoundError, UserNotAuthorizedError, UsedEntityError, catchErrors, InvalidTokenError } from 'lib/errors';
@@ -65,26 +65,7 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
   }
 
   const token = createEphemeralToken({ username: user.username, email: user.email, password: user.password});
-  // https://blog.mailtrap.io/sending-emails-with-nodemailer/
-  await mailer.sendMail({
-    from: '"Attic Team" <from@attic-server.com>',
-    to: email,
-    subject: 'Hiya! welcome to Attic - Activation Link',
-    text: `Hey there, it’s nice to see you here ;). Please use the link to activate your acccount`,
-    html: `<b>Hey ${user.username}! </b><br> it’s nice to see you here ;)
-
-      <h1>You're just one step away from being a proud Attic member!</h1>
-      <p>Please visit <a href="${config.clientUrl}/auth/activate/${token}">${config.clientUrl}/auth/activate/${token.substr(0, 12)}...</a> to activate your account</p>
-
-      Thanks,
-      Team Attic
-    `
-  }, (error: any, info: any) => {
-    if (error) {
-        return console.log(error);
-    }
-    console.log('Message sent: %s', info.messageId);
-  })
+  ee.emit(EVENTS.user.signUp, { username: user.username, email: user.email, password: user.password, token })
   res.status(201).send(user.toResponseObject());
 });
 
@@ -156,32 +137,10 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
   user.resetPasswordToken = token;
   const isUpdated = await user.save();
   if (isUpdated) {
-    return res.send(`Hey ${user.username}! You can use attic now`);
+    ee.emit(EVENTS.user.resetPassword, { username: user.username, email: user.email, password: user.password, token })
+    return res.send(`Hey ${user.username}! Email has been sent to ${user.email}. Follow the instruction to activate your account`);
   }
-
-  await mailer.sendMail({
-    from: '"Attic Team" <from@attic-server.com>',
-    to: email,
-    subject: 'Hiya! welcome to Attic - Password Rest Link',
-    text: `Hey there, Please use the link to reset your acccount's password`,
-    html: `<b>Hey ${user.username}! </b>
-
-      <h1>Please use the link to reset your acccount's password!</h1>
-      <p>Please visit <a href="${config.clientUrl}/auth/password/reset/${token}">${config.clientUrl}/auth/password/reset/${token.substr(0, 12)}...</a> to activate your account</p>
-
-      Thanks,
-      Team Attic
-    `
-  }, (error: any, _info: any) => {
-    if (error) {
-          return res.json({
-            message: error.message
-          });
-    }
-    return res.json({
-      message: `Email has been sent to ${email}. Follow the instruction to activate your account`
-    });
-  })
+  res.send('Errorr!')
 };
 
 export const resetPassword = async (req: Request, res: Response, _: NextFunction) => {

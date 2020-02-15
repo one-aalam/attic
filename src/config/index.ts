@@ -36,5 +36,8 @@ export default {
   dirs: {
     uploads: '/uploads',
   },
-  clientUrl: process.env.CLIENT_URL
+  clientUrl: process.env.CLIENT_URL,
+
+  // statics
+  emailFrom: '"Attic Team" <no-reply@attic-server.com>'
 };

@@ -3,6 +3,7 @@ import { tryDbInit } from 'loaders/db'
 import appInit from 'loaders/express'
 import { logger } from 'loaders/logger';
 import mailer from 'lib/utils/mailer';
+import './events';
 
 export const load = async(app: Express) => {
     await tryDbInit();
