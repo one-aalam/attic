@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 
-import { createToken, createEphemeralToken, verifyEphemeralToken } from 'lib/utils/jwt';
-
 import ee, { EVENTS } from 'lib/utils/ee';
-
+import { createToken, createEphemeralToken, verifyEphemeralToken } from 'lib/utils/jwt';
 import * as userService from 'services/user.service';
-import { BadUserInputError, UserNotFoundError, UserNotAuthorizedError, UsedEntityError, catchErrors, InvalidTokenError } from 'lib/errors';
+
+import {
+  BadUserInputError,
+  UserNotFoundError,
+  UserNotAuthorizedError,
+  UsedEntityError,
+  catchErrors,
+  InvalidTokenError
+} from 'lib/errors';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -69,6 +75,27 @@ export const register = catchErrors(async (req: Request, res: Response, next: Ne
   res.status(201).send(user.toResponseObject());
 });
 
+export const activate = async (req: Request, res: Response, _: NextFunction) => {
+    const token = req.params.token;
+    let payload;
+    try {
+        payload = verifyEphemeralToken(token)
+    } catch(err) {
+        throw new InvalidTokenError();
+    }
+    const user = await userService.find({ where: { username: payload.username } });
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    user.active = true;
+    const isSaved = await user.save();
+    if (isSaved) {
+      return res.send(`Hey ${user.username}! You can use attic now`);
+    }
+    return res.send(`Hey ${user.username}! We've met with an error while updating yourr details. Please try again!`);
+}
+
 export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
   //Get ID from JWT
   const id = res.locals.jwtPayload.userId;
@@ -102,27 +129,6 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
   });
   res.status(204).send();
 };
-
-export const activate = async (req: Request, res: Response, _: NextFunction) => {
-    const token = req.params.token;
-    let payload;
-    try {
-        payload = verifyEphemeralToken(token)
-    } catch(err) {
-        throw new InvalidTokenError();
-    }
-    const user = await userService.find({ where: { username: payload.username } });
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-
-    user.active = true;
-    const isSaved = await user.save();
-    if (isSaved) {
-      return res.send(`Hey ${user.username}! You can use attic now`);
-    }
-    return res.send(`Hey ${user.username}! We've met with an error while updating yourr details. Please try again!`);
-}
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   const { email } = req.body;
