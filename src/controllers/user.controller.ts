@@ -11,7 +11,8 @@ export const getOne = catchErrors(async (req: Request, res: Response) => {
 export const getAll = catchErrors(async (req: IUserAndAuthFnRequest, res: Response) => {
     req.authorize && req.authorize();
     const users = await userService.findAll({});
-    const usersJson = await users.map((user: any) => user.toResponseObject());
+    // @TODO: Achieve filtering through TypeORM
+    const usersJson = await users.filter((user:any) => user.roles.indexOf('ROLE_ADMIN') === -1).map((user: any) => user.toResponseObject());
     res.send(usersJson);
 });
 
