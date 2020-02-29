@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import { OAuth2Client } from 'google-auth-library';
+import fetch from 'node-fetch';
 
+import config from 'config';
 import ee, { EVENTS } from 'lib/utils/ee';
 import { createToken, createEphemeralToken, verifyEphemeralToken } from 'lib/utils/jwt';
 import * as userService from 'services/user.service';
@@ -12,6 +15,21 @@ import {
   catchErrors,
   InvalidTokenError
 } from 'lib/errors';
+
+const googleClient = new OAuth2Client(config.googleClientId);
+
+const createAndSendToken = (user: any, res: Response) => {
+  const token = createToken({
+    userId: user?.id,
+    username: user?.username,
+    roles: user?.roles
+  });
+  res.locals.jwtPayload = {
+    id: user?.id
+  };
+  res.set('Authorization', `Bearer ${token}`);
+  return res.status(201).send({token, user: user.toResponseObject()});
+}
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -33,17 +51,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     if (!isPasswordValid) {
       return next(new UserNotAuthorizedError())
     }
-
-    const token = createToken({
-        userId: user?.id,
-        username: user?.username,
-        roles: user?.roles
-    });
-    res.locals.jwtPayload = {
-      id: user?.id
-    };
-    res.set('Authorization', `Bearer ${token}`);
-    res.status(201).send(token);
+    return createAndSendToken(user, res);
 };
 
 export const register = catchErrors(async (req: Request, res: Response, next: NextFunction) => {
@@ -174,4 +182,77 @@ export const resetPassword = async (req: Request, res: Response, _: NextFunction
   } else {
     return res.send(`Hey, the token seems missing in the call!`);
   }
+};
+
+export const googleLogin = async (req: Request, res: Response, _: NextFunction) => {
+  const { idToken } = req.body;
+  const loginTicket = await googleClient.verifyIdToken({ idToken, audience: config.googleClientId as string });
+  const tokenPayload = await loginTicket.getPayload();
+  if (tokenPayload) {
+    const { email_verified, name, email,
+      given_name, family_name, picture, sub } = tokenPayload;
+    let user;
+    if (email_verified) {
+      user = await userService.find({ where: { email } });
+      if (!user && email) {
+        const password = email + !config.jwt.secretKey;
+        try {
+          user = await userService.create({
+            username: name,
+            email,
+            password,
+            profile: {
+              oAuthBy: 'google',
+              given_name,
+              family_name,
+              picture,
+              sub
+            },
+            active: true
+          });
+        } catch(err) {
+          throw new UsedEntityError(`User signup failed with Google`);
+        }
+      }
+      return createAndSendToken(user, res);
+    }
+  }
+  return res.status(400).json({
+      error: 'Google login failed. Try again'
+  });
+};
+
+export const facebookLogin = async (req: Request, res: Response, _: NextFunction) => {
+  const { userId, accessToken } = req.body;
+  const url = `https://graph.facebook.com/v2.11/${userId}/?fields=id,name,email,picture&access_token=${accessToken}`;
+  const response = await (await fetch(url, { method: 'GET'})).json();
+  if (response) {
+    const { id, name, email, picture } = response;
+    let user;
+    if (id) {
+      user = await userService.find({ where: { email } });
+      if (!user && email) {
+        const password = email + !config.jwt.secretKey;
+        try {
+          user = await userService.create({
+            username: name,
+            email,
+            password,
+            profile: {
+              oAuthBy: 'facebook',
+              picture,
+              sub: id
+            },
+            active: true
+          });
+        } catch(err) {
+          throw new UsedEntityError(`User signup failed with Facebook`);
+        }
+      }
+      return createAndSendToken(user, res);
+    }
+  }
+  return res.status(400).json({
+      error: 'Facebook login failed. Try again'
+  });
 };

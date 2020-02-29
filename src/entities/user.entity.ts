@@ -39,6 +39,12 @@ class User extends BaseEntity {
   })
   avatarUrl?: string[];
 
+  @Column({
+    type: "simple-json",
+    default: {},
+  })
+  profile?: {[key:string]: string};
+
   @Column({ default: false })
   active!: boolean;
 

@@ -33,11 +33,11 @@ export default {
     debug: false, // show debug output
     logger: false // log information in console
   },
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
   dirs: {
     uploads: '/uploads',
   },
   clientUrl: process.env.CLIENT_URL,
-
   // statics
   emailFrom: '"Attic Team" <no-reply@attic-server.com>'
 };

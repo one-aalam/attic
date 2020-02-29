@@ -9,7 +9,7 @@ import { findOneOrThrow } from 'services/user.service';
 import { enforce } from 'lib/middlewares/enforce';
 import { isAdmin, isOwner } from './route.policy';
 
-const bodyParser = bodyParse.json({
+export const bodyParser = bodyParse.json({
     limit: '100kb',
 });
 
