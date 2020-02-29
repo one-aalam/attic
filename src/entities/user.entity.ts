@@ -53,8 +53,7 @@ class User extends BaseEntity {
 
   @Column({
     type: "simple-array",
-    default: ['ROLE_USER'],
-    array: true,
+    default: 'ROLE_USER'
   })
   roles?: string[]; // ROLE_USER, ROLE_ADMIN
 
