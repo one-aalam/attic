@@ -1,6 +1,12 @@
 # Attic
 
+<img src="./attic-logo.png" alt="attic-logo" />
+
 `But the real interesting stuff is in the cellar and the attic`
+
+## Important commands
+- For migrations config, refer: https://typeorm.io/#/using-ormconfig/using-ormconfigjson
+- `typeorm migration:create -n PostRefactoring`
 
 
 
